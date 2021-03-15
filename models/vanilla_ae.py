@@ -5,7 +5,7 @@ from torch.nn import functional as F
 from .types_ import *
 
 
-class VanillaVAE(BaseVAE):
+class VanillaAE(BaseVAE):
 
 
     def __init__(self,
@@ -13,7 +13,7 @@ class VanillaVAE(BaseVAE):
                  latent_dim: int,
                  hidden_dims: List = None,
                  **kwargs) -> None:
-        super(VanillaVAE, self).__init__()
+        super(VanillaAE, self).__init__()
 
         self.latent_dim = latent_dim
 
@@ -214,9 +214,9 @@ class VanillaVAE(BaseVAE):
 
     def forward(self, input: Tensor, **kwargs) -> List[Tensor]:
         mu, log_var = self.encode(input)
-        z = self.reparameterize(mu, log_var)
-        return  [self.decode(z), input, mu, log_var] # VAE
-        # return  [self.decode(mu), input, mu, log_var] # for autoencoder
+        # z = self.reparameterize(mu, log_var)
+        # return  [self.decode(z), input, mu, log_var] # VAE
+        return  [self.decode(mu), input, mu, log_var] # for autoencoder
 
     def loss_function(self,
                       *args,
@@ -239,9 +239,9 @@ class VanillaVAE(BaseVAE):
 
         kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim = 1), dim = 0)
 
-        loss = recons_loss + kld_weight * kld_loss
+        loss = recons_loss #+ kld_weight * kld_loss
 
-        return {'loss': loss, 'Reconstruction_Loss': recons_loss, 'KLD': -kld_loss}
+        return {'loss': loss} #, 'Reconstruction_Loss': recons_loss, 'KLD': -kld_loss}
 
     def sample(self,
                num_samples:int,

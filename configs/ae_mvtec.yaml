@@ -1,0 +1,24 @@
+model_params:
+  name: 'VanillaAE'
+  in_channels: 3
+  latent_dim: 512
+
+exp_params:
+  dataset: mvtec
+  object: bottle
+  data_path: "/n/pfister_lab2/Lab/vcg_natural/mvtec/"
+  img_size: 256
+  batch_size: 16 # Better to have a square number
+  LR: 0.0001
+  weight_decay: 0.005
+  scheduler_gamma: 0.95
+
+trainer_params:
+  gpus: 1
+  max_nb_epochs: 30
+  max_epochs: 100
+
+logging_params:
+  save_dir: "logs/"
+  name: "VanillaAE_MVTec"
+  manual_seed: 1265

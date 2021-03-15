@@ -45,11 +45,15 @@ runner = Trainer(default_save_path=f"{tt_logger.save_dir}",
                  min_nb_epochs=1,
                  logger=tt_logger,
                  log_save_interval=100,
-                 train_percent_check=1.,
-                 val_percent_check=1.,
+                 train_percent_check=1,
+                 val_percent_check=1,
                  num_sanity_val_steps=5,
                  early_stop_callback = False,
                  **config['trainer_params'])
 
 print(f"======= Training {config['model_params']['name']} =======")
+print(f"Latent_dim: {config['model_params']['latent_dim']}")
+print(f"Object: {config['exp_params']['object']}")
+print("======= =======")
+
 runner.fit(experiment)
