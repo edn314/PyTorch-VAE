@@ -9,7 +9,7 @@ from torchvision import transforms
 import torchvision.utils as vutils
 from torchvision.datasets import CelebA, MNIST
 from torch.utils.data import DataLoader
-from datasets.datasets import MVTec_Dataset
+from datasets.datasets import MVTec_Dataset, CyCIF_Dataset
 import os 
 from sklearn.metrics import roc_auc_score
 import numpy as np
@@ -32,7 +32,7 @@ class VAEXperiment(pl.LightningModule):
 
         self.diff_list = []
         self.det_list = []
-        self.seg_list = [] 
+        self.seg_list = []
 
     def forward(self, input: Tensor, **kwargs) -> Tensor:
         return self.model(input, **kwargs)
@@ -123,7 +123,7 @@ class VAEXperiment(pl.LightningModule):
         avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
         tensorboard_logs = {'avg_val_loss': avg_loss}
         self.sample_images()
-        
+
         # Detection Metric
         labels = torch.cat(self.det_list)
         diff_imgs = torch.cat(self.diff_list)
@@ -132,10 +132,15 @@ class VAEXperiment(pl.LightningModule):
         # print(f'Det: {det_auroc:4.2f}')
 
         # Segmentation Metric
-        gt_mask = torch.cat(self.seg_list)
-        gt_mask[gt_mask <= 128] = 0
-        gt_mask[gt_mask > 128] = 255
-        gt_mask[gt_mask == 255] = 1  # 1: anomaly
+        if self.params['dataset'] == 'mvtec':
+            gt_mask = torch.cat(self.seg_list)
+            gt_mask[gt_mask <= 128] = 0
+            gt_mask[gt_mask > 128] = 255
+            gt_mask[gt_mask == 255] = 1  # 1: anomaly
+        elif self.params['dataset'] == 'cycif':
+            gt_mask = torch.cat(self.seg_list)
+            gt_mask[gt_mask == 4] = 0
+            gt_mask[gt_mask > 0] = 1  # 1: anomaly
 
         anomaly_maps = torch.mean(diff_imgs,dim=1)
         anomaly_maps = torch.unsqueeze(anomaly_maps,dim=1)
@@ -256,6 +261,9 @@ class VAEXperiment(pl.LightningModule):
             dataset = MVTec_Dataset(root = self.params['data_path'],
                              obj = self.params['object'],
                              split = "train")
+        elif self.params['dataset'] == 'cycif':
+            dataset = CyCIF_Dataset(root = self.params['data_path'],
+                             split = "train")
         else:
             raise ValueError('Undefined dataset type')
 
@@ -296,6 +304,12 @@ class VAEXperiment(pl.LightningModule):
                                                 batch_size= self.params['batch_size'],
                                                 shuffle = True,
                                                 drop_last=True)
+        elif self.params['dataset'] == 'cycif':
+            self.sample_dataloader =  DataLoader(CyCIF_Dataset(root = self.params['data_path'],
+                                                                split = "val"),
+                                                batch_size= self.params['batch_size'],
+                                                shuffle = True,
+                                                drop_last=True)
             self.num_val_imgs = len(self.sample_dataloader)
         else:
             raise ValueError('Undefined dataset type')
@@ -319,7 +333,10 @@ class VAEXperiment(pl.LightningModule):
                                             SetRange])   
         elif self.params['dataset'] == 'mvtec':
             transform = transforms.Compose([#transforms.RandomHorizontalFlip(),
-                                            transforms.ToTensor()])                    
+                                            transforms.ToTensor()])
+        elif self.params['dataset'] == 'cycif':
+            transform = transforms.Compose([#transforms.RandomHorizontalFlip(),
+                                            transforms.ToTensor()])                  
         else:
             raise ValueError('Undefined dataset type')
         return transform

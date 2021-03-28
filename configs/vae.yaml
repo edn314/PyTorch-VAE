@@ -1,13 +1,14 @@
 model_params:
   name: 'VanillaVAE'
-  in_channels: 3
+  in_channels: 1
   latent_dim: 128
+  out_channels: 1
 
 exp_params:
-  dataset: celeba
-  data_path: "../../shared/Data/"
-  img_size: 64
-  batch_size: 144 # Better to have a square number
+  dataset: mnist
+  data_path: "../../../shared/Data/"
+  img_size: 28
+  batch_size: 16 # Better to have a square number
   LR: 0.005
   weight_decay: 0.0
   scheduler_gamma: 0.95

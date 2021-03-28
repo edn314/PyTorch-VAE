@@ -11,6 +11,7 @@ class VanillaVAE(BaseVAE):
     def __init__(self,
                  in_channels: int,
                  latent_dim: int,
+                 out_channels: int,
                  hidden_dims: List = None,
                  **kwargs) -> None:
         super(VanillaVAE, self).__init__()
@@ -122,7 +123,7 @@ class VanillaVAE(BaseVAE):
                             nn.BatchNorm2d(hidden_dims[-1]),
                             nn.LeakyReLU(),
                             nn.Conv2d(hidden_dims[-1], 
-                                    out_channels= 3, #1 for mnist
+                                    out_channels= out_channels, #1 for mnist
                                     kernel_size= 3, 
                                     padding= 1),
                             # nn.Tanh())

@@ -2,6 +2,7 @@ model_params:
   name: 'VanillaVAE'
   in_channels: 3
   latent_dim: 512
+  out_channels: 3
 
 exp_params:
   dataset: mvtec

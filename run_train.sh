@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -N 1 # number of nodes
-#SBATCH -p cox
+#SBATCH -p fas_gpu
 #SBATCH -n 8 # number of cores
 #SBATCH --mem 10000 # memory pool for all cores
 #SBATCH --gres=gpu:1 # memory pool for all cores
@@ -17,6 +17,13 @@ nvidia-smi -L
 
 # Run (-u to prevent buffering)
 # python run.py -c configs/vae.yaml #MNIST
-python run.py -c configs/vae_mvtec.yaml #MVTec VAE
+
+# python run.py -c configs/vae_mvtec.yaml #MVTec VAE
 # python run.py -c configs/ae_mvtec.yaml #MVTec AE
-# python run.py -c configs/"$1" #MVTec objects
+
+# python run.py -c configs/"$1" #MVTec objects or multiple CyCIF models
+
+python run.py -c configs/ae_cycif.yaml # CyCIF AE
+# python run.py -c configs/vae_cycif.yaml # CyCIF VAE
+# python run.py -c configs/cae_cycif.yaml # CyCIF CAE
+# python run.py -c configs/ms_ssim_cae_cycif.yaml # CyCIF MS-SSIM CAE

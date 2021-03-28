@@ -53,7 +53,8 @@ runner = Trainer(default_save_path=f"{tt_logger.save_dir}",
 
 print(f"======= Training {config['model_params']['name']} =======")
 print(f"Latent_dim: {config['model_params']['latent_dim']}")
-print(f"Object: {config['exp_params']['object']}")
+if (config['exp_params']['dataset'] == 'mvtec'):
+    print(f"Object: {config['exp_params']['object']}")
 print("======= =======")
 
 runner.fit(experiment)
